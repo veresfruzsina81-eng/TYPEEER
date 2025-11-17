@@ -16,6 +16,125 @@
         overflow: hidden;
     }
 
+    .red { color: #ff4b4b; }
+    .green { color: #6bff6b; }
+    .yellow { color: #ffe16b; }
+    .dim { opacity: 0.6; }
+
+    /* ===== LOGIN SCREEN ===== */
+    #loginScreen {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at top, #050b12 0%, #020309 60%, #000000 100%);
+    }
+
+    #loginBox {
+        width: 340px;
+        padding: 24px 22px 18px;
+        background: rgba(3, 12, 24, 0.95);
+        border-radius: 10px;
+        border: 1px solid #1f9bd1;
+        box-shadow: 0 0 30px rgba(0, 204, 255, 0.35);
+    }
+
+    #loginTitle {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        color: #86e0ff;
+    }
+
+    #loginBox h1 {
+        font-size: 18px;
+        margin: 0 0 10px;
+    }
+
+    #loginBox p {
+        font-size: 11px;
+        margin: 0 0 14px;
+        color: #9fb7c9;
+    }
+
+    .field-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 4px;
+        color: #8ddcff;
+    }
+
+    #accessKey {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 4px;
+        border: 1px solid #1f9bd1;
+        background: #020814;
+        color: #e5f6ff;
+        font-family: Consolas, monospace;
+        font-size: 13px;
+        outline: none;
+    }
+
+    #accessKey:focus {
+        border-color: #4ad2ff;
+        box-shadow: 0 0 8px rgba(74,210,255,0.4);
+    }
+
+    #loginButton {
+        margin-top: 12px;
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 4px;
+        border: 1px solid #32c3ff;
+        background: linear-gradient(90deg, #0474b6, #09b3e6);
+        color: #e5f6ff;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+    }
+
+    #loginButton:hover {
+        filter: brightness(1.08);
+    }
+
+    #loginError {
+        margin-top: 8px;
+        font-size: 11px;
+        color: #ff6b6b;
+        min-height: 13px;
+    }
+
+    #loginFoot {
+        margin-top: 10px;
+        font-size: 10px;
+        color: #6d8394;
+        text-align: center;
+    }
+
+    .shake {
+        animation: shakeBox 0.28s linear;
+    }
+
+    @keyframes shakeBox {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-4px); }
+        50% { transform: translateX(4px); }
+        75% { transform: translateX(-3px); }
+        100% { transform: translateX(0); }
+    }
+
+    /* ===== TERMINAL SCREEN ===== */
+    #terminalScreen {
+        position: fixed;
+        inset: 0;
+        display: none;
+    }
+
     #terminal {
         padding: 20px;
         white-space: pre-line;
@@ -24,11 +143,6 @@
         height: 100vh;
         overflow-y: auto;
     }
-
-    .red { color: #ff4b4b; }
-    .green { color: #6bff6b; }
-    .yellow { color: #ffe16b; }
-    .dim { opacity: 0.6; }
 
     #overlayAlert {
         position: fixed;
@@ -70,12 +184,33 @@
 </head>
 <body>
 
-<div id="terminal"></div>
-<div id="overlayAlert"></div>
-<div id="hud">
-    NEPTUNE QUANTUM SYSTEMS<br>
-    <span class="label">CYBER OPS SIMULATION</span>
-    <span class="label">AUDIO: ON</span>
+<!-- LOGIN KÉPERNYŐ -->
+<div id="loginScreen">
+    <div id="loginBox">
+        <div id="loginTitle">NEPTUNE QUANTUM SYSTEMS</div>
+        <h1>Secure Access Gateway</h1>
+        <p>Enter privileged access key to open the Cyber Operations Simulation console.</p>
+
+        <div class="field-label">Access key</div>
+        <input id="accessKey" type="password" placeholder="••••••••••" autocomplete="off">
+
+        <button id="loginButton" type="button">Initialize Session</button>
+        <div id="loginError"></div>
+        <div id="loginFoot">
+            SIMULATION MODE – All systems, users and data are fictional.
+        </div>
+    </div>
+</div>
+
+<!-- TERMINÁL KÉPERNYŐ -->
+<div id="terminalScreen">
+    <div id="terminal"></div>
+    <div id="overlayAlert"></div>
+    <div id="hud">
+        NEPTUNE QUANTUM SYSTEMS<br>
+        <span class="label">CYBER OPS SIMULATION</span>
+        <span class="label">AUDIO: ON</span>
+    </div>
 </div>
 
 <script>
@@ -147,17 +282,17 @@ const financeRecords = [
 `================ DATABASE: FINANCE_CORE =================
 Record ID: 0192-A
 Cardholder: NEPTUNE_CORP_USER_14
-Card Number: 4242 •••• •••• 4242 (TEST)
-Expiry: 07/29   CVV: 332 (TEST)
-Balance: ₮ 1 480.55
+Card Number: 4242 •••• •••• 4242 
+Expiry: 07/29   CVV: 332 
+Balance: ₮ 9 480.55
 Address: 7 Quantum Arc Blvd, Sector-3, Neo City
 Phone: +99 555 203 8891
 ---------------------------------------------------------\n`,
 `Record ID: 0088-C
 Cardholder: HYDRA_SEC_OPERATIVE_07
-Card Number: 5555 •••• •••• 4444 (TEST)
-Expiry: 01/30   CVV: 919 (TEST)
-Balance: ₮ 892.10
+Card Number: 5555 •••• •••• 4444 
+Expiry: 01/30   CVV: 919 
+Balance: ₮ 1.892.10
 Address: 14 Hydra Shield Ave, Block-2, Iron District
 Phone: +99 555 203 7745
 ---------------------------------------------------------\n`,
@@ -195,48 +330,48 @@ Phone: +99 555 207 1010
 ---------------------------------------------------------\n`,
 `Record ID: 2210-P
 Cardholder: TITAN_RESEARCH_LAB
-Card Number: 5200 •••• •••• 8210 (TEST)
-Expiry: 01/30   CVV: 681 (TEST)
+Card Number: 5200 •••• •••• 8210 
+Expiry: 01/30   CVV: 681 
 Balance: ₮ 452.00
 Address: 42 Ion Drive, Research Wing, Titan Yard
 Phone: +99 555 209 6600
 ---------------------------------------------------------\n`,
 `Record ID: 3048-X
 Cardholder: NEPTUNE_SUPPORT_AGENT_12
-Card Number: 2223 •••• •••• 0011 (TEST)
-Expiry: 12/27   CVV: 330 (TEST)
+Card Number: 2223 •••• •••• 0011 
+Expiry: 12/27   CVV: 330
 Balance: ₮ 18.09
 Address: 9 Callcenter Row, Support Hub, Tower 2
 Phone: +99 555 200 7733
 ---------------------------------------------------------\n`,
 `Record ID: 4410-B
 Cardholder: DEMO_ACCOUNT_PUBLIC
-Card Number: 3782 •••• ••• 10005 (TEST)
-Expiry: 04/29   CVV: 1023 (TEST)
+Card Number: 3782 •••• ••• 10005 
+Expiry: 04/29   CVV: 102
 Balance: ₮ 5.00
 Address: 1 Demo Plaza, Public Sandbox Zone
 Phone: +99 555 111 0000
 ---------------------------------------------------------\n`,
 `Record ID: 5099-L
 Cardholder: TRAINING_PROFILE_07
-Card Number: 3714 •••• ••• 98431 (TEST)
-Expiry: 07/28   CVV: 4441 (TEST)
+Card Number: 3714 •••• ••• 98431 
+Expiry: 07/28   CVV: 444
 Balance: ₮ 250.75
 Address: 21 Academy Loop, Training District
 Phone: +99 555 300 2222
 ---------------------------------------------------------\n`,
 `Record ID: 6120-D
 Cardholder: NEPTUNE_EXEC_VAULT
-Card Number: 5555 •••• •••• 1234 (TEST)
-Expiry: 03/31   CVV: 777 (TEST)
+Card Number: 5555 •••• •••• 1234 
+Expiry: 03/31   CVV: 777 
 Balance: ₮ 18 990.00
 Address: 88 Executive Skyline, Penthouse 41, Neo City
 Phone: +99 555 888 7770
 ---------------------------------------------------------\n`,
 `Record ID: 7001-Q
 Cardholder: HYDRA_MICRO_TX_SIM
-Card Number: 4242 •••• •••• 0008 (TEST)
-Expiry: 09/27   CVV: 101 (TEST)
+Card Number: 4242 •••• •••• 0008 
+Expiry: 09/27   CVV: 101 
 Balance: ₮ 0.99
 Address: 404 Phantom Alley, Shadow Block
 Phone: +99 555 000 4040
@@ -303,11 +438,7 @@ STATUS: FLAGGED – routing to security AI
 -------------------------------------------------------\n`
 ];
 
-async function start() {
-    // első kattintásnál engedélyezzük az audio-t
-    window.addEventListener("click", initAudio, { once: true });
-    window.addEventListener("keydown", initAudio, { once: true });
-
+async function runTerminal() {
     await print("NEPTUNE QUANTUM SYSTEMS\n", 20);
     await print("GLOBAL CYBER OPERATIONS NETWORK\n", 20);
     await print("--------------------------------------------\n\n", 10);
@@ -367,7 +498,43 @@ async function start() {
     await print("\n<span class='yellow'>SIMULATION MODE ACTIVE – This system, users and all data are entirely fictional.</span>", 15);
 }
 
-start();
+/* ======== LOGIN LOGIKA ======== */
+const loginScreen = document.getElementById("loginScreen");
+const loginBox = document.getElementById("loginBox");
+const terminalScreen = document.getElementById("terminalScreen");
+const loginButton = document.getElementById("loginButton");
+const accessKeyInput = document.getElementById("accessKey");
+const loginError = document.getElementById("loginError");
+
+const SECRET_KEY = "neptune-root";
+
+function doLogin() {
+    initAudio(); // első interakciókor audio init
+    const value = accessKeyInput.value.trim();
+    if (value === SECRET_KEY) {
+        loginError.textContent = "";
+        loginBox.classList.remove("shake");
+        // átmenet
+        loginScreen.style.display = "none";
+        terminalScreen.style.display = "block";
+        runTerminal();
+    } else {
+        // rossz jelszó
+        loginError.textContent = "ACCESS DENIED – Invalid access key.";
+        loginBox.classList.remove("shake");
+        void loginBox.offsetWidth; // reflow a shake újraindításához
+        loginBox.classList.add("shake");
+        warningBeepSequence();
+        accessKeyInput.select();
+    }
+}
+
+loginButton.addEventListener("click", doLogin);
+accessKeyInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        doLogin();
+    }
+});
 </script>
 </body>
 </html>
