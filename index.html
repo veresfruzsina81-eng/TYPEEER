@@ -2,35 +2,37 @@
 <html lang="hu">
 <head>
 <meta charset="UTF-8">
-<title>Különleges Web Trükkök</title>
+<title>Ultra Web Effektek – DEMO</title>
 <style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #111;
-        color: #fff;
-    }
-    section {
-        padding: 80px 20px;
-        text-align: center;
-        border-bottom: 1px solid #333;
-    }
-    h1 {
-        font-size: 40px;
-        margin-bottom: 20px;
-        color: #0ff;
-    }
+body {
+    margin: 0;
+    background: #0d0d0d;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+}
+section {
+    padding: 80px 20px;
+    text-align: center;
+    border-bottom: 1px solid #222;
+}
+h1 {
+    font-size: 40px;
+    color: #0ff;
+    margin-bottom: 20px;
+}
 </style>
 </head>
-
 <body>
 
-<!-- ===============================
-     1) 3D Forgó Szöveg Illúzió
-================================ -->
+
+
+<!-- =========================================================
+   1) 3D FORGÓ SZÖVEG
+========================================================= -->
 <section>
-    <h1>1) 3D Forgó Szöveg Illúzió</h1>
-    <div class="illusion">AURION</div>
+<h1>1) 3D Forgó Szöveg</h1>
+<div class="illusion">AURION</div>
 </section>
 
 <style>
@@ -38,9 +40,8 @@
     font-size: 80px;
     font-weight: 900;
     color: transparent;
-    position: relative;
     animation: spin 4s linear infinite;
-    margin-top: 40px;
+    position: relative;
 }
 .illusion::before {
     content: "AURION";
@@ -50,48 +51,43 @@
         0 0 5px #fff,
         2px 2px 10px #0ff,
         -2px -2px 10px #f0f,
-        0 0 20px #0ff,
+        0 0 25px #0ff,
         0 0 40px #f0f;
 }
 @keyframes spin {
     from { transform: rotateX(0deg) rotateY(0deg); }
-    to { transform: rotateX(360deg) rotateY(360deg); }
+    to   { transform: rotateX(360deg) rotateY(360deg); }
 }
 </style>
 
 
 
-<!-- ===============================
-     2) CSS MATRIX ESŐ
-================================ -->
+<!-- =========================================================
+   2) CSS MATRIX RAIN
+========================================================= -->
 <section>
-    <h1>2) CSS Matrix Eső (JavaScript nélkül)</h1>
-    <div class="rain">
-        <span>M</span><span>A</span><span>T</span><span>R</span><span>I</span><span>X</span>
-    </div>
+<h1>2) CSS Matrix Rain</h1>
+<div class="matrix">
+    <span>M</span><span>A</span><span>T</span><span>R</span><span>I</span><span>X</span>
+</div>
 </section>
 
 <style>
-body {
-    overflow-x: hidden;
-}
-
-.rain span {
+.matrix span {
     position: fixed;
     top: -100px;
     color: #0f0;
     font-size: 40px;
-    animation: fall 2s linear infinite;
+    animation: drop 2.5s linear infinite;
 }
+.matrix span:nth-child(1){ left:10%;  animation-delay:-0.2s;}
+.matrix span:nth-child(2){ left:25%;  animation-delay:-0.4s;}
+.matrix span:nth-child(3){ left:40%;  animation-delay:-0.6s;}
+.matrix span:nth-child(4){ left:55%;  animation-delay:-0.8s;}
+.matrix span:nth-child(5){ left:70%;  animation-delay:-1.0s;}
+.matrix span:nth-child(6){ left:85%;  animation-delay:-1.2s;}
 
-.rain span:nth-child(1) { left: 10%; animation-delay: -0.2s; }
-.rain span:nth-child(2) { left: 25%; animation-delay: -0.4s; }
-.rain span:nth-child(3) { left: 40%; animation-delay: -0.6s; }
-.rain span:nth-child(4) { left: 55%; animation-delay: -0.8s; }
-.rain span:nth-child(5) { left: 70%; animation-delay: -1s; }
-.rain span:nth-child(6) { left: 85%; animation-delay: -1.2s; }
-
-@keyframes fall {
+@keyframes drop {
     to {
         transform: translateY(120vh);
         opacity: 0;
@@ -101,25 +97,25 @@ body {
 
 
 
-<!-- ===============================
-     3) EGÉR KÖVETŐ GLOW KURZOR
-================================ -->
+<!-- =========================================================
+   3) GLOW FOLLOW CURSOR
+========================================================= -->
 <section>
-    <h1>3) Élő kurzor követés (CSS + minimális JS)</h1>
-    <p>Mozgasd az egeret!</p>
-    <div class="cursor"></div>
+<h1>3) Világító kurzor követés</h1>
+<p>Mozgasd az egeret!</p>
+<div class="cursor-glow"></div>
 </section>
 
 <style>
-.cursor {
+.cursor-glow {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: radial-gradient(#0ff, #00f);
     position: fixed;
     top: 0;
     left: 0;
     pointer-events: none;
+    background: radial-gradient(circle, #00f, #0ff);
     mix-blend-mode: screen;
     transform: translate(-50%, -50%);
 }
@@ -127,11 +123,163 @@ body {
 
 <script>
 document.addEventListener('mousemove', e => {
-    const c = document.querySelector('.cursor');
+    const c = document.querySelector('.cursor-glow');
     c.style.left = e.clientX + "px";
-    c.style.top = e.clientY + "px";
+    c.style.top  = e.clientY + "px";
 });
 </script>
+
+
+
+<!-- =========================================================
+   4) 3D LEBEGŐ TELEFON VALÓS IDŐBEN FUTÓ KÓDDAL
+========================================================= -->
+<section>
+<h1>4) 3D Lebegő Telefon (benne élő kód)</h1>
+<div class="phone">
+    <div class="screen">
+        <pre class="code">
+function aurion() {
+    console.log("Welcome!");
+}
+aurion();
+        </pre>
+    </div>
+</div>
+</section>
+
+<style>
+.phone {
+    width: 260px;
+    height: 520px;
+    background: #000;
+    border-radius: 35px;
+    margin: auto;
+    padding: 20px;
+    box-shadow: 0 0 30px #00bcd4;
+    animation: float 3s ease-in-out infinite;
+    transform-style: preserve-3d;
+}
+.screen {
+    background: #111;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    padding: 10px;
+    color: #0ff;
+    overflow: hidden;
+}
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotateX(10deg); }
+    50% { transform: translateY(-20px) rotateX(-10deg); }
+}
+.code {
+    text-align: left;
+    font-size: 14px;
+}
+</style>
+
+
+
+<!-- =========================================================
+   5) HOLOGRAM EFFEKT – EGÉR MOZGÁSRA
+========================================================= -->
+<section>
+<h1>5) Interaktív Hologram Szöveg</h1>
+<div class="holo">AURION</div>
+</section>
+
+<style>
+.holo {
+    font-size: 90px;
+    font-weight: bold;
+    color: #0ff;
+    text-shadow: 0 0 20px #0ff;
+    transition: 0.1s;
+}
+body:hover .holo {
+    transform: perspective(500px) rotateY(var(--rotate));
+}
+</style>
+
+<script>
+document.addEventListener("mousemove", e => {
+    let rotate = (e.clientX / window.innerWidth - 0.5) * 60 + "deg";
+    document.body.style.setProperty("--rotate", rotate);
+});
+</script>
+
+
+
+<!-- =========================================================
+   6) ÜVEG TÖRÉS / GLASS TEXT EFFEKT
+========================================================= -->
+<section>
+<h1>6) Üveg Fény Törés Szöveg</h1>
+<div class="glass">PREMIUM</div>
+</section>
+
+<style>
+.glass {
+    font-size: 100px;
+    font-weight: 900;
+    background: linear-gradient(90deg,#fff,#0ff,#fff);
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow:
+        0 0 10px rgba(255,255,255,0.6),
+        0 0 20px rgba(0,255,255,0.6);
+    filter: blur(0.5px);
+}
+</style>
+
+
+
+<!-- =========================================================
+   7) RÉSZECSKE FELHŐ – EGÉR KÖVETÉS
+========================================================= -->
+<section>
+<h1>7) Részecske Felhő Egér Követés</h1>
+<canvas id="particles"></canvas>
+</section>
+
+<style>
+#particles {
+    width: 100%;
+    height: 300px;
+}
+</style>
+
+<script>
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = 300;
+
+let particles = [];
+
+document.addEventListener("mousemove", e => {
+    particles.push({x:e.clientX, y:e.clientY, size:5});
+});
+
+function animate() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    particles.forEach((p,i)=>{
+        p.size *= 0.95;
+        ctx.fillStyle = "#0ff";
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+        ctx.fill();
+        if (p.size < 0.8) particles.splice(i,1);
+    });
+
+    requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+
 
 </body>
 </html>
