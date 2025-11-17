@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NEPTUNE QUANTUM SYSTEMS – Cyber Ops Simulation</title>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        background: radial-gradient(circle at top, #061824 0%, #020409 60%, #000000 100%);
+        color: #39c6ff;
+        font-family: Consolas, monospace;
+        overflow: hidden;
+    }
+
+    #terminal {
+        padding: 20px;
+        white-space: pre-line;
+        font-size: 13px;
+        line-height: 1.3;
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    .red { color: #ff4b4b; }
+    .green { color: #6bff6b; }
+    .yellow { color: #ffe16b; }
+    .dim { opacity: 0.6; }
+
+    #overlayAlert {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,0,0,0.08);
+        pointer-events: none;
+        opacity: 0;
+        animation: none;
+    }
+
+    @keyframes alertFlash {
+        0% { opacity: 0.05; }
+        50% { opacity: 0.4; }
+        100% { opacity: 0.05; }
+    }
+
+    /* HUD felül */
+    #hud {
+        position: fixed;
+        top: 8px;
+        right: 12px;
+        font-size: 11px;
+        text-align: right;
+        text-transform: uppercase;
+        color: #86e0ff;
+        pointer-events: none;
+    }
+    #hud span.label {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 3px;
+        border: 1px solid #1f9bd1;
+        margin-left: 4px;
+    }
+</style>
+</head>
+<body>
+
+<div id="terminal"></div>
+<div id="overlayAlert"></div>
+<div id="hud">
+    NEPTUNE QUANTUM SYSTEMS<br>
+    <span class="label">CYBER OPS SIMULATION</span>
+    <span class="label">AUDIO: ON</span>
+</div>
+
+<script>
+/* ======== AUDIO MOTOR (gépelés + warning beep) ======== */
+let audioCtx = null;
+
+function initAudio() {
+    if (!audioCtx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (AC) {
+            audioCtx = new AC();
+        }
+    }
+}
+
+function beep(freq = 600, duration = 0.05, type = "square", volume = 0.05) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.value = volume;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    const now = audioCtx.currentTime;
+    osc.start(now);
+    osc.stop(now + duration);
+}
+
+function typeSound(charIndex) {
+    // minden 8. karakterre egy kis katt
+    if (charIndex % 8 === 0) {
+        beep(900, 0.015, "square", 0.015);
+    }
+}
+
+function warningBeepSequence() {
+    // három rövid warning beep
+    beep(220, 0.15, "sawtooth", 0.12);
+    setTimeout(() => beep(220, 0.15, "sawtooth", 0.12), 230);
+    setTimeout(() => beep(160, 0.2, "sawtooth", 0.14), 480);
+}
+
+/* ======== TERMINÁL LOGIKA ======== */
+let t = document.getElementById("terminal");
+
+function print(text, delay = 40, withTypingSound = true) {
+    return new Promise(resolve => {
+        let i = 0;
+        let interval = setInterval(() => {
+            t.innerHTML += text[i];
+            t.scrollTop = t.scrollHeight;
+            if (withTypingSound && text[i] && text[i] !== " " && text[i] !== "\n") {
+                typeSound(i);
+            }
+            i++;
+            if (i >= text.length) {
+                clearInterval(interval);
+                resolve();
+            }
+        }, delay);
+    });
+}
+
+/* ======== KAMU ADATOK (minden fiktív / teszt) ======== */
+
+// Pénzügyi rekordok – kisebb/nagyobb összegek vegyesen
+const financeRecords = [
+`================ DATABASE: FINANCE_CORE =================
+Record ID: 0192-A
+Cardholder: NEPTUNE_CORP_USER_14
+Card Number: 4242 •••• •••• 4242 (TEST)
+Expiry: 07/29   CVV: 332 (TEST)
+Balance: ₮ 1 480.55
+Address: 7 Quantum Arc Blvd, Sector-3, Neo City
+Phone: +99 555 203 8891
+---------------------------------------------------------\n`,
+`Record ID: 0088-C
+Cardholder: HYDRA_SEC_OPERATIVE_07
+Card Number: 5555 •••• •••• 4444 (TEST)
+Expiry: 01/30   CVV: 919 (TEST)
+Balance: ₮ 892.10
+Address: 14 Hydra Shield Ave, Block-2, Iron District
+Phone: +99 555 203 7745
+---------------------------------------------------------\n`,
+`Record ID: 5531-Z
+Cardholder: TITAN_GLOBAL_FIN-009
+Card Number: 4000 •••• •••• 0005 (TEST)
+Expiry: 10/28   CVV: 228 (TEST)
+Balance: ₮ 3 200.90
+Address: 77 Titan Core St, Highrise 18, Skyport
+Phone: +99 555 201 4450
+---------------------------------------------------------\n`,
+`Record ID: 7722-K
+Cardholder: INTERNAL_TEST_ACC_22
+Card Number: 4111 •••• •••• 1111 (TEST)
+Expiry: 05/30   CVV: 201 (TEST)
+Balance: ₮ 64.33
+Address: 3 Sandbox Lane, Dev-Quarter, Grid City
+Phone: +99 555 200 1188
+---------------------------------------------------------\n`,
+`Record ID: 9921-R
+Cardholder: NEPTUNE_CORE_FIN_91
+Card Number: 4012 •••• •••• 1881 (TEST)
+Expiry: 02/28   CVV: 044 (TEST)
+Balance: ₮ 312.77
+Address: 19 Neptune Ring Road, Core Sector
+Phone: +99 555 204 3300
+---------------------------------------------------------\n`,
+`Record ID: 1044-M
+Cardholder: QA_STAGING_USER_03
+Card Number: 5105 •••• •••• 5100 (TEST)
+Expiry: 09/28   CVV: 198 (TEST)
+Balance: ₮ 97.12
+Address: 5 Beta Test Sq., Lab Block C, Grid City
+Phone: +99 555 207 1010
+---------------------------------------------------------\n`,
+`Record ID: 2210-P
+Cardholder: TITAN_RESEARCH_LAB
+Card Number: 5200 •••• •••• 8210 (TEST)
+Expiry: 01/30   CVV: 681 (TEST)
+Balance: ₮ 452.00
+Address: 42 Ion Drive, Research Wing, Titan Yard
+Phone: +99 555 209 6600
+---------------------------------------------------------\n`,
+`Record ID: 3048-X
+Cardholder: NEPTUNE_SUPPORT_AGENT_12
+Card Number: 2223 •••• •••• 0011 (TEST)
+Expiry: 12/27   CVV: 330 (TEST)
+Balance: ₮ 18.09
+Address: 9 Callcenter Row, Support Hub, Tower 2
+Phone: +99 555 200 7733
+---------------------------------------------------------\n`,
+`Record ID: 4410-B
+Cardholder: DEMO_ACCOUNT_PUBLIC
+Card Number: 3782 •••• ••• 10005 (TEST)
+Expiry: 04/29   CVV: 1023 (TEST)
+Balance: ₮ 5.00
+Address: 1 Demo Plaza, Public Sandbox Zone
+Phone: +99 555 111 0000
+---------------------------------------------------------\n`,
+`Record ID: 5099-L
+Cardholder: TRAINING_PROFILE_07
+Card Number: 3714 •••• ••• 98431 (TEST)
+Expiry: 07/28   CVV: 4441 (TEST)
+Balance: ₮ 250.75
+Address: 21 Academy Loop, Training District
+Phone: +99 555 300 2222
+---------------------------------------------------------\n`,
+`Record ID: 6120-D
+Cardholder: NEPTUNE_EXEC_VAULT
+Card Number: 5555 •••• •••• 1234 (TEST)
+Expiry: 03/31   CVV: 777 (TEST)
+Balance: ₮ 18 990.00
+Address: 88 Executive Skyline, Penthouse 41, Neo City
+Phone: +99 555 888 7770
+---------------------------------------------------------\n`,
+`Record ID: 7001-Q
+Cardholder: HYDRA_MICRO_TX_SIM
+Card Number: 4242 •••• •••• 0008 (TEST)
+Expiry: 09/27   CVV: 101 (TEST)
+Balance: ₮ 0.99
+Address: 404 Phantom Alley, Shadow Block
+Phone: +99 555 000 4040
+---------------------------------------------------------\n`
+];
+
+// Felhasználók (USER_TABLE)
+const userRecords = [
+`================ TABLE: USER_DIRECTORY ================
+User ID: neo.sys.admin
+Role: Lead Systems Architect
+Clearance: LEVEL 7 (ROOT)
+Last Login: 2025-11-16 03:44:12
+MFA: ENABLED (Hardware Token)
+-------------------------------------------------------\n`,
+`User ID: hydra.ops.07
+Role: Security Operations Engineer
+Clearance: LEVEL 5
+Last Login: 2025-11-16 23:01:09
+MFA: DISABLED
+-------------------------------------------------------\n`,
+`User ID: titan.lab.rnd
+Role: Research Node Supervisor
+Clearance: LEVEL 4
+Last Login: 2025-11-15 19:22:55
+MFA: ENABLED (App)
+-------------------------------------------------------\n`,
+`User ID: training.user.03
+Role: Training Environment Demo Profile
+Clearance: LEVEL 1
+Last Login: 2025-11-10 09:11:00
+MFA: DISABLED
+-------------------------------------------------------\n`,
+`User ID: support.agent.12
+Role: Customer Support Specialist
+Clearance: LEVEL 2
+Last Login: 2025-11-17 08:15:37
+MFA: ENABLED (SMS)
+-------------------------------------------------------\n`
+];
+
+// Logok (ACCESS_LOGS)
+const logRecords = [
+`================ TABLE: ACCESS_LOGS ===================
+2025-11-17 01:12:09  SRC_IP: 10.42.16.3   GEO: Neo City / Central
+EVENT: VPN session established → ROLE: hydra.ops.07
+STATUS: SUCCESS
+-------------------------------------------------------\n`,
+`2025-11-17 01:22:51  SRC_IP: 172.16.9.77  GEO: Grid City / Dev-Quarter
+EVENT: Finance core table read → USER: training.user.03
+STATUS: DENIED (insufficient clearance)
+-------------------------------------------------------\n`,
+`2025-11-17 02:01:44  SRC_IP: 192.168.44.19 GEO: Titan Yard / Lab Wing
+EVENT: Research node sync → USER: titan.lab.rnd
+STATUS: SUCCESS
+-------------------------------------------------------\n`,
+`2025-11-17 02:44:02  SRC_IP: 10.42.16.3   GEO: Neo City / Central
+EVENT: Elevation request → USER: hydra.ops.07
+STATUS: PARTIAL (read-only)
+-------------------------------------------------------\n`,
+`2025-11-17 03:03:59  SRC_IP: 127.0.0.1   GEO: INTERNAL / SIMULATION
+EVENT: Unauthorized root access pattern detected
+STATUS: FLAGGED – routing to security AI
+-------------------------------------------------------\n`
+];
+
+async function start() {
+    // első kattintásnál engedélyezzük az audio-t
+    window.addEventListener("click", initAudio, { once: true });
+    window.addEventListener("keydown", initAudio, { once: true });
+
+    await print("NEPTUNE QUANTUM SYSTEMS\n", 20);
+    await print("GLOBAL CYBER OPERATIONS NETWORK\n", 20);
+    await print("--------------------------------------------\n\n", 10);
+
+    await print("BOOTING SECURE TERMINAL........ OK\n", 15);
+    await print("INITIALIZING QUANTUM FIREWALL.. OK\n", 15);
+    await print("ESTABLISHING BACKDOOR CHANNEL.. <span class='yellow'>PENDING</span>\n", 15);
+    await print("OVERRIDING AUTHENTICATION...... <span class='green'>GRANTED</span>\n\n", 15);
+
+    await print("[BRUTE_FORCE_ENGINE] Injecting synthetic entropy...\n", 10);
+    await print("[ENCRYPTION LAYER 3] Bypassed successfully.\n", 10);
+    await print("[ACCESS LEVEL] ELEVATED → <span class='green'>ROOT-QUANTUM</span>\n", 10);
+    await print("[SYSTEM] <span class='green'>ACCESS GRANTED</span>\n\n", 15);
+
+    // Finance core
+    await print("LOADING DATABASE: FINANCE_CORE........\n", 20);
+    await print("Decrypting records...\n", 25);
+    await print(financeRecords.length + " ENTRIES FOUND.\n\n", 10);
+
+    for (let rec of financeRecords) {
+        await print(rec, 3);
+        await new Promise(r => setTimeout(r, 140));
+    }
+
+    // User directory
+    await print("\nLOADING TABLE: USER_DIRECTORY........\n", 20);
+    await print("Decrypting user profiles...\n\n", 22);
+
+    for (let u of userRecords) {
+        await print(u, 3);
+        await new Promise(r => setTimeout(r, 120));
+    }
+
+    // Access logs
+    await print("\nLOADING TABLE: ACCESS_LOGS........\n", 20);
+    await print("Reconstructing event timeline...\n\n", 22);
+
+    for (let log of logRecords) {
+        await print(log, 3);
+        await new Promise(r => setTimeout(r, 110));
+    }
+
+    // Riasztás + villogás + warning beep
+    let overlay = document.getElementById("overlayAlert");
+    overlay.style.animation = "alertFlash 0.8s infinite";
+    warningBeepSequence();
+
+    await print("\n\n<span class='red'>!!! SECURITY ALERT !!!</span>\n", 18);
+    await print("<span class='red'>UNAUTHORIZED ACCESS PATTERN CONFIRMED</span>\n", 18);
+    await print("Deploying countermeasures...\n", 22);
+    await print("Attempting trace...\n", 22);
+    await print("<span class='green'>TRACE BLOCKED — USER SIGNATURE OBFUSCATED</span>\n", 25);
+
+    await print("\nEXTRACTING LOGS........ DONE\n", 15);
+    await print("DISCONNECTING FROM HOST........ COMPLETE\n", 15);
+
+    await print("\n<span class='yellow'>SIMULATION MODE ACTIVE – This system, users and all data are entirely fictional.</span>", 15);
+}
+
+start();
+</script>
+</body>
+</html>
