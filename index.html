@@ -1,285 +1,820 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-<meta charset="UTF-8">
-<title>Ultra Web Effektek – DEMO</title>
-<style>
-body {
-    margin: 0;
-    background: #0d0d0d;
-    color: #fff;
-    font-family: Arial, sans-serif;
-    overflow-x: hidden;
-}
-section {
-    padding: 80px 20px;
-    text-align: center;
-    border-bottom: 1px solid #222;
-}
-h1 {
-    font-size: 40px;
-    color: #0ff;
-    margin-bottom: 20px;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>Élő Dimenzió – Interaktív Animáció</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --tiltX: 0deg;
+            --tiltY: 0deg;
+            --glowX: 50%;
+            --glowY: 50%;
+            --accent: #fbbf24;
+            --accent-2: #22d3ee;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 10% -10%, rgba(56, 189, 248, 0.25), transparent 55%),
+                radial-gradient(circle at 120% 120%, rgba(251, 191, 36, 0.25), transparent 55%),
+                radial-gradient(circle at 50% 50%, #020617 0, #020617 50%, #000 100%);
+            color: #e5e7eb;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: -200px;
+            background:
+                radial-gradient(circle at var(--glowX) var(--glowY),
+                    rgba(251, 191, 36, 0.20),
+                    transparent 60%);
+            opacity: 0.85;
+            mix-blend-mode: screen;
+            pointer-events: none;
+            transition: background-position 0.25s ease-out;
+            z-index: -1;
+        }
+
+        .noise {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.08;
+            mix-blend-mode: soft-light;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.8'/%3E%3C/svg%3E");
+            z-index: 40;
+        }
+
+        .universe {
+            position: relative;
+            width: min(900px, 90vw);
+            height: min(550px, 75vh);
+            border-radius: 32px;
+            padding: 28px 28px 32px;
+            background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.94));
+            box-shadow:
+                0 0 0 1px rgba(148, 163, 184, 0.18),
+                0 30px 80px rgba(15, 23, 42, 0.95);
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transform: rotateX(var(--tiltX)) rotateY(var(--tiltY));
+            transition: transform 0.2s ease-out;
+        }
+
+        .universe::before {
+            content: "";
+            position: absolute;
+            inset: -40%;
+            background:
+                radial-gradient(circle at 20% 0, rgba(56, 189, 248, 0.07), transparent 55%),
+                radial-gradient(circle at 120% 60%, rgba(251, 191, 36, 0.07), transparent 55%);
+            opacity: 1;
+            pointer-events: none;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 18px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-orb {
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 20%, #facc15, #f97316, #4c1d95);
+            box-shadow:
+                0 0 15px rgba(250, 204, 21, 0.8),
+                0 0 35px rgba(249, 115, 22, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-orb::before {
+            content: "";
+            position: absolute;
+            inset: -40%;
+            background: conic-gradient(from 0deg,
+                rgba(248, 250, 252, 0.15),
+                transparent 30%,
+                rgba(248, 250, 252, 0.15),
+                transparent 60%,
+                transparent 100%);
+            animation: orbSweep 5s linear infinite;
+        }
+
+        .logo-text-main {
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            font-size: 0.92rem;
+        }
+
+        .logo-text-sub {
+            font-size: 0.72rem;
+            color: #9ca3af;
+        }
+
+        .chip {
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            padding: 4px 10px;
+            font-size: 0.72rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: radial-gradient(circle at top, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.3));
+            color: #9ca3af;
+        }
+
+        .chip-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: radial-gradient(circle, #22c55e, #16a34a);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+            position: relative;
+        }
+
+        .chip-dot::before {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border-radius: inherit;
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            opacity: 0;
+            animation: ripple 1.8s ease-out infinite;
+        }
+
+        .scene {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr);
+            gap: 26px;
+            height: calc(100% - 40px);
+        }
+
+        @media (max-width: 800px) {
+            .universe {
+                height: 88vh;
+            }
+
+            .scene {
+                grid-template-columns: minmax(0, 1fr);
+                grid-template-rows: auto 1fr;
+            }
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 14px;
+        }
+
+        .badge-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .gradient-badge {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            background: linear-gradient(90deg,
+                rgba(15, 23, 42, 0.9),
+                rgba(30, 64, 175, 0.5),
+                rgba(15, 23, 42, 0.9));
+            background-size: 200% 100%;
+            animation: shimmer 5s linear infinite;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .gradient-badge span {
+            font-size: 0.6rem;
+            opacity: 0.8;
+        }
+
+        .title {
+            font-size: clamp(1.7rem, 3vw, 2.2rem);
+            font-weight: 600;
+            line-height: 1.25;
+        }
+
+        .title span {
+            background: linear-gradient(120deg, #facc15, #f97316, #22c55e, #22d3ee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            font-size: 0.88rem;
+            color: #9ca3af;
+            max-width: 26rem;
+        }
+
+        .subtitle strong {
+            color: #e5e7eb;
+            font-weight: 500;
+        }
+
+        .cta-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .portal-btn {
+            position: relative;
+            border: none;
+            border-radius: 999px;
+            padding: 9px 20px;
+            font-size: 0.86rem;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            color: #020617;
+            background: radial-gradient(circle at 20% 0, #f9fafb, #facc15);
+            box-shadow:
+                0 0 0 1px rgba(148, 163, 184, 0.4),
+                0 18px 30px rgba(250, 204, 21, 0.4);
+            overflow: hidden;
+        }
+
+        .portal-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .portal-btn::before {
+            content: "";
+            position: absolute;
+            inset: -40%;
+            background: conic-gradient(from 90deg,
+                rgba(248, 250, 252, 0.7),
+                rgba(248, 250, 252, 0),
+                rgba(248, 250, 252, 0.7),
+                rgba(248, 250, 252, 0));
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+        }
+
+        .portal-btn:hover::before {
+            opacity: 1;
+            transform: translateX(0%);
+        }
+
+        .portal-btn:active {
+            transform: translateY(1px) scale(0.99);
+        }
+
+        .ghost-link {
+            font-size: 0.78rem;
+            color: #9ca3af;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .ghost-link-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 999px;
+            background: #22d3ee;
+            box-shadow: 0 0 8px rgba(34, 211, 238, 0.9);
+        }
+
+        .ghost-link span {
+            position: relative;
+        }
+
+        .ghost-link span::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -2px;
+            height: 1px;
+            background: linear-gradient(90deg,
+                rgba(148, 163, 184, 0), rgba(148, 163, 184, 0.9), rgba(148, 163, 184, 0));
+            transform-origin: center;
+            transform: scaleX(0.2);
+            opacity: 0;
+            transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+        }
+
+        .ghost-link:hover span::after {
+            opacity: 1;
+            transform: scaleX(1);
+        }
+
+        .micro-copy {
+            font-size: 0.68rem;
+            color: #6b7280;
+            margin-top: 6px;
+        }
+
+        .micro-copy code {
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.68rem;
+            padding: 2px 6px;
+            border-radius: 999px;
+            border: 1px solid rgba(75, 85, 99, 0.7);
+            background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.7));
+            color: #e5e7eb;
+        }
+
+        /* ====== RIGHT PANEL / DIMENZIÓ GÖMB ====== */
+
+        .right-panel {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            isolation: isolate;
+        }
+
+        .core-orb-wrapper {
+            position: relative;
+            width: min(330px, 70vw);
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 25px 40px rgba(15, 23, 42, 0.9));
+        }
+
+        .halo-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 999px;
+            background:
+                conic-gradient(from 0deg,
+                    rgba(56, 189, 248, 0.0) 0deg,
+                    rgba(56, 189, 248, 0.35) 120deg,
+                    rgba(251, 191, 36, 0.45) 200deg,
+                    rgba(248, 250, 252, 0.0) 320deg,
+                    rgba(56, 189, 248, 0.0) 360deg);
+            mask: radial-gradient(circle, transparent 55%, #000 70%);
+            animation: ringSpin 10s linear infinite;
+            opacity: 0.9;
+        }
+
+        .halo-ring::before {
+            content: "";
+            position: absolute;
+            inset: 12%;
+            border-radius: inherit;
+            border: 1px dashed rgba(148, 163, 184, 0.3);
+            box-shadow: 0 0 20px rgba(148, 163, 184, 0.25);
+            opacity: 0.7;
+        }
+
+        .core-orb {
+            position: relative;
+            width: 74%;
+            height: 74%;
+            border-radius: 999px;
+            background:
+                radial-gradient(circle at 25% 20%, #fef9c3, #f97316),
+                radial-gradient(circle at 80% 80%, #22d3ee, #0f172a);
+            box-shadow:
+                0 0 0 1px rgba(15, 23, 42, 0.9),
+                0 0 40px rgba(250, 204, 21, 0.7),
+                0 0 90px rgba(34, 211, 238, 0.6);
+            overflow: hidden;
+        }
+
+        .core-orb::before {
+            content: "";
+            position: absolute;
+            inset: -40%;
+            background:
+                conic-gradient(from 120deg,
+                    rgba(248, 250, 252, 0.2),
+                    rgba(248, 250, 252, 0),
+                    rgba(248, 250, 252, 0.4),
+                    rgba(248, 250, 252, 0));
+            animation: orbSweep 6s linear infinite;
+            mix-blend-mode: soft-light;
+        }
+
+        .core-orb::after {
+            content: "";
+            position: absolute;
+            inset: 14%;
+            border-radius: inherit;
+            background:
+                radial-gradient(circle at 30% 15%, rgba(248, 250, 252, 0.9), transparent 55%);
+            mix-blend-mode: screen;
+            opacity: 0.9;
+        }
+
+        .orb-grid {
+            position: absolute;
+            inset: 16%;
+            border-radius: inherit;
+            background-image:
+                linear-gradient(rgba(15, 23, 42, 0.28) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(15, 23, 42, 0.28) 1px, transparent 1px);
+            background-size: 20px 20px;
+            mix-blend-mode: soft-light;
+            opacity: 0.7;
+            mask: radial-gradient(circle, #000 0, #000 60%, transparent 100%);
+            animation: gridDrift 8s linear infinite;
+        }
+
+        .orb-pulse {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            border: 1px solid rgba(248, 250, 252, 0.35);
+            opacity: 0;
+            animation: orbPulse 2.8s ease-out infinite;
+        }
+
+        .orb-pulse:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .orb-pulse:nth-child(2) {
+            animation-delay: 0.6s;
+        }
+
+        .orb-pulse:nth-child(3) {
+            animation-delay: 1.2s;
+        }
+
+        .floating-bit {
+            position: absolute;
+            width: 46px;
+            padding: 6px 10px;
+            border-radius: 12px;
+            background: radial-gradient(circle at top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.8));
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.8);
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.58rem;
+            color: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            opacity: 0.95;
+        }
+
+        .floating-bit span.key {
+            color: #22d3ee;
+        }
+
+        .floating-bit span.value {
+            color: #facc15;
+        }
+
+        .floating-bit:nth-child(1) {
+            top: 8%;
+            left: 4%;
+            animation: floatBitA 6.5s ease-in-out infinite;
+        }
+
+        .floating-bit:nth-child(2) {
+            top: 72%;
+            right: 6%;
+            animation: floatBitB 7s ease-in-out infinite;
+        }
+
+        .floating-bit:nth-child(3) {
+            bottom: 8%;
+            left: 18%;
+            animation: floatBitC 5.8s ease-in-out infinite;
+        }
+
+        /* ====== ORBITÁLIS SZÖVEGGYŰRŰ ====== */
+
+        .orbit-text {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .orbit-text span {
+            position: absolute;
+            inset: 0;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.28em;
+            font-size: 0.52rem;
+            color: rgba(148, 163, 184, 0.8);
+            animation: textOrbit 14s linear infinite;
+        }
+
+        .orbit-text span::before {
+            content: "DIMENZIÓ • REAKTÍV KÓD • FÉNY • MOZGÁS • "; /* körbe érő szöveg */
+        }
+
+        /* ====== ANIMÁCIÓK ====== */
+
+        @keyframes orbSweep {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes ringSpin {
+            0% { transform: rotateX(60deg) rotateZ(0deg); }
+            100% { transform: rotateX(60deg) rotateZ(360deg); }
+        }
+
+        @keyframes gridDrift {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-40px, -20px, 0); }
+        }
+
+        @keyframes orbPulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.4;
+            }
+            70% {
+                transform: scale(1.25);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1.25);
+                opacity: 0;
+            }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes ripple {
+            0% { transform: scale(0.4); opacity: 0.75; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+
+        @keyframes floatBitA {
+            0%, 100% { transform: translate3d(0, 0, 0); }
+            50% { transform: translate3d(10px, 14px, 0); }
+        }
+
+        @keyframes floatBitB {
+            0%, 100% { transform: translate3d(0, 0, 0); }
+            50% { transform: translate3d(-12px, -10px, 0); }
+        }
+
+        @keyframes floatBitC {
+            0%, 100% { transform: translate3d(0, 0, 0); }
+            50% { transform: translate3d(8px, -12px, 0); }
+        }
+
+        @keyframes textOrbit {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(-360deg); }
+        }
+    </style>
 </head>
 <body>
+<div class="noise"></div>
 
+<div class="universe">
+    <div class="top-bar">
+        <div class="logo">
+            <div class="logo-orb"></div>
+            <div>
+                <div class="logo-text-main">Live Dimension</div>
+                <div class="logo-text-sub">Reaktív fény &amp; kód</div>
+            </div>
+        </div>
 
+        <div class="chip">
+            <div class="chip-dot"></div>
+            Valós időben reagál
+        </div>
+    </div>
 
-<!-- =========================================================
-   1) 3D FORGÓ SZÖVEG
-========================================================= -->
-<section>
-<h1>1) 3D Forgó Szöveg</h1>
-<div class="illusion">AURION</div>
-</section>
+    <div class="scene">
+        <div class="left-panel">
+            <div class="badge-row">
+                <div class="gradient-badge">
+                    <span>ÚJ</span> ÉLŐ DIMENZIÓ PORTÁL
+                </div>
+            </div>
+            <h1 class="title">
+                Egy <span>lélegző</span> HTML animáció,<br>ami az egérmozgásodra él.
+            </h1>
+            <p class="subtitle">
+                Mozgasd az <strong>egeret</strong>, és figyeld, ahogy a gömb, a fények és a háttér
+                finoman követik a mozdulataidat – mintha egy mini
+                <strong>interaktív univerzumot</strong> tartanál a kijelzőn.
+            </p>
 
-<style>
-.illusion {
-    font-size: 80px;
-    font-weight: 900;
-    color: transparent;
-    animation: spin 4s linear infinite;
-    position: relative;
-}
-.illusion::before {
-    content: "AURION";
-    position: absolute;
-    inset: 0;
-    text-shadow:
-        0 0 5px #fff,
-        2px 2px 10px #0ff,
-        -2px -2px 10px #f0f,
-        0 0 25px #0ff,
-        0 0 40px #f0f;
-}
-@keyframes spin {
-    from { transform: rotateX(0deg) rotateY(0deg); }
-    to   { transform: rotateX(360deg) rotateY(360deg); }
-}
-</style>
+            <div class="cta-row">
+                <button class="portal-btn" id="portalBtn">
+                    <span>Belépek a dimenzióba</span>
+                </button>
+                <div class="ghost-link" id="glitchToggle">
+                    <div class="ghost-link-dot"></div>
+                    <span>Glitch mód (on/off)</span>
+                </div>
+            </div>
 
+            <div class="micro-copy">
+                Ez az animáció teljesen <code>HTML + CSS + JS</code> alapú – nincs framework,
+                nincs library, csak nyers böngésző mágia.
+            </div>
+        </div>
 
+        <div class="right-panel">
+            <div class="core-orb-wrapper" id="orbWrapper">
+                <div class="halo-ring"></div>
 
-<!-- =========================================================
-   2) CSS MATRIX RAIN
-========================================================= -->
-<section>
-<h1>2) CSS Matrix Rain</h1>
-<div class="matrix">
-    <span>M</span><span>A</span><span>T</span><span>R</span><span>I</span><span>X</span>
-</div>
-</section>
+                <div class="core-orb">
+                    <div class="orb-grid"></div>
+                    <div class="orb-pulse"></div>
+                    <div class="orb-pulse"></div>
+                    <div class="orb-pulse"></div>
+                </div>
 
-<style>
-.matrix span {
-    position: fixed;
-    top: -100px;
-    color: #0f0;
-    font-size: 40px;
-    animation: drop 2.5s linear infinite;
-}
-.matrix span:nth-child(1){ left:10%;  animation-delay:-0.2s;}
-.matrix span:nth-child(2){ left:25%;  animation-delay:-0.4s;}
-.matrix span:nth-child(3){ left:40%;  animation-delay:-0.6s;}
-.matrix span:nth-child(4){ left:55%;  animation-delay:-0.8s;}
-.matrix span:nth-child(5){ left:70%;  animation-delay:-1.0s;}
-.matrix span:nth-child(6){ left:85%;  animation-delay:-1.2s;}
+                <div class="orbit-text">
+                    <span></span>
+                </div>
 
-@keyframes drop {
-    to {
-        transform: translateY(120vh);
-        opacity: 0;
-    }
-}
-</style>
-
-
-
-<!-- =========================================================
-   3) GLOW FOLLOW CURSOR
-========================================================= -->
-<section>
-<h1>3) Világító kurzor követés</h1>
-<p>Mozgasd az egeret!</p>
-<div class="cursor-glow"></div>
-</section>
-
-<style>
-.cursor-glow {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    background: radial-gradient(circle, #00f, #0ff);
-    mix-blend-mode: screen;
-    transform: translate(-50%, -50%);
-}
-</style>
-
-<script>
-document.addEventListener('mousemove', e => {
-    const c = document.querySelector('.cursor-glow');
-    c.style.left = e.clientX + "px";
-    c.style.top  = e.clientY + "px";
-});
-</script>
-
-
-
-<!-- =========================================================
-   4) 3D LEBEGŐ TELEFON VALÓS IDŐBEN FUTÓ KÓDDAL
-========================================================= -->
-<section>
-<h1>4) 3D Lebegő Telefon (benne élő kód)</h1>
-<div class="phone">
-    <div class="screen">
-        <pre class="code">
-function aurion() {
-    console.log("Welcome!");
-}
-aurion();
-        </pre>
+                <!-- Lebegő mini “adatcsomagok” -->
+                <div class="floating-bit">
+                    <span class="key">x</span>
+                    <span class="value" id="bitX">0.00</span>
+                </div>
+                <div class="floating-bit">
+                    <span class="key">y</span>
+                    <span class="value" id="bitY">0.00</span>
+                </div>
+                <div class="floating-bit">
+                    <span class="key">∆</span>
+                    <span class="value" id="bitDelta">0.00</span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-</section>
-
-<style>
-.phone {
-    width: 260px;
-    height: 520px;
-    background: #000;
-    border-radius: 35px;
-    margin: auto;
-    padding: 20px;
-    box-shadow: 0 0 30px #00bcd4;
-    animation: float 3s ease-in-out infinite;
-    transform-style: preserve-3d;
-}
-.screen {
-    background: #111;
-    width: 100%;
-    height: 100%;
-    border-radius: 20px;
-    padding: 10px;
-    color: #0ff;
-    overflow: hidden;
-}
-@keyframes float {
-    0%, 100% { transform: translateY(0px) rotateX(10deg); }
-    50% { transform: translateY(-20px) rotateX(-10deg); }
-}
-.code {
-    text-align: left;
-    font-size: 14px;
-}
-</style>
-
-
-
-<!-- =========================================================
-   5) HOLOGRAM EFFEKT – EGÉR MOZGÁSRA
-========================================================= -->
-<section>
-<h1>5) Interaktív Hologram Szöveg</h1>
-<div class="holo">AURION</div>
-</section>
-
-<style>
-.holo {
-    font-size: 90px;
-    font-weight: bold;
-    color: #0ff;
-    text-shadow: 0 0 20px #0ff;
-    transition: 0.1s;
-}
-body:hover .holo {
-    transform: perspective(500px) rotateY(var(--rotate));
-}
-</style>
 
 <script>
-document.addEventListener("mousemove", e => {
-    let rotate = (e.clientX / window.innerWidth - 0.5) * 60 + "deg";
-    document.body.style.setProperty("--rotate", rotate);
-});
-</script>
+    const root = document.documentElement;
+    const bitX = document.getElementById('bitX');
+    const bitY = document.getElementById('bitY');
+    const bitDelta = document.getElementById('bitDelta');
+    const orbWrapper = document.getElementById('orbWrapper');
+    const glitchToggle = document.getElementById('glitchToggle');
+    const portalBtn = document.getElementById('portalBtn');
 
+    let lastX = 0.0;
+    let lastY = 0.0;
+    let glitchOn = false;
 
+    function updateFromPointer(x, y) {
+        const nx = (x / window.innerWidth - 0.5) * 2;  // -1..1
+        const ny = (y / window.innerHeight - 0.5) * 2; // -1..1
 
-<!-- =========================================================
-   6) ÜVEG TÖRÉS / GLASS TEXT EFFEKT
-========================================================= -->
-<section>
-<h1>6) Üveg Fény Törés Szöveg</h1>
-<div class="glass">PREMIUM</div>
-</section>
+        const tiltX = (ny * -7).toFixed(2); // fok
+        const tiltY = (nx * 7).toFixed(2);
 
-<style>
-.glass {
-    font-size: 100px;
-    font-weight: 900;
-    background: linear-gradient(90deg,#fff,#0ff,#fff);
-    -webkit-background-clip: text;
-    color: transparent;
-    text-shadow:
-        0 0 10px rgba(255,255,255,0.6),
-        0 0 20px rgba(0,255,255,0.6);
-    filter: blur(0.5px);
-}
-</style>
+        root.style.setProperty('--tiltX', tiltX + 'deg');
+        root.style.setProperty('--tiltY', tiltY + 'deg');
+        root.style.setProperty('--glowX', (50 + nx * 14) + '%');
+        root.style.setProperty('--glowY', (50 + ny * 14) + '%');
 
+        const dx = nx - lastX;
+        const dy = ny - lastY;
+        const delta = Math.sqrt(dx * dx + dy * dy);
 
+        lastX = nx;
+        lastY = ny;
 
-<!-- =========================================================
-   7) RÉSZECSKE FELHŐ – EGÉR KÖVETÉS
-========================================================= -->
-<section>
-<h1>7) Részecske Felhő Egér Követés</h1>
-<canvas id="particles"></canvas>
-</section>
+        bitX.textContent = nx.toFixed(2);
+        bitY.textContent = ny.toFixed(2);
+        bitDelta.textContent = delta.toFixed(2);
+    }
 
-<style>
-#particles {
-    width: 100%;
-    height: 300px;
-}
-</style>
-
-<script>
-const canvas = document.getElementById("particles");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = 300;
-
-let particles = [];
-
-document.addEventListener("mousemove", e => {
-    particles.push({x:e.clientX, y:e.clientY, size:5});
-});
-
-function animate() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    particles.forEach((p,i)=>{
-        p.size *= 0.95;
-        ctx.fillStyle = "#0ff";
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
-        ctx.fill();
-        if (p.size < 0.8) particles.splice(i,1);
+    document.addEventListener('pointermove', (e) => {
+        updateFromPointer(e.clientX, e.clientY);
     });
 
-    requestAnimationFrame(animate);
-}
-animate();
+    // Ha nincs egérmozgás, lassan “lélegezzen” magától
+    let t = 0;
+    function idleBreathe() {
+        t += 0.015;
+        const autoX = (Math.sin(t) * 0.25 + 0.5) * window.innerWidth;
+        const autoY = (Math.cos(t * 1.2) * 0.25 + 0.5) * window.innerHeight;
+        if (!mouseActiveRecently) {
+            updateFromPointer(autoX, autoY);
+        }
+        requestAnimationFrame(idleBreathe);
+    }
+
+    let mouseActiveRecently = false;
+    let mouseTimeout;
+
+    document.addEventListener('pointermove', () => {
+        mouseActiveRecently = true;
+        clearTimeout(mouseTimeout);
+        mouseTimeout = setTimeout(() => {
+            mouseActiveRecently = false;
+        }, 1400);
+    });
+
+    idleBreathe();
+
+    // Glitch mód – kis véletlen remegés és színtorzítás
+    glitchToggle.addEventListener('click', () => {
+        glitchOn = !glitchOn;
+        orbWrapper.style.transition = 'filter 0.25s ease-out, transform 0.25s ease-out';
+
+        if (glitchOn) {
+            orbWrapper.style.filter = 'contrast(1.1) saturate(1.35) hue-rotate(12deg)';
+            glitchToggle.querySelector('span').textContent = 'Glitch mód: AKTÍV';
+            startGlitch();
+        } else {
+            orbWrapper.style.filter = 'none';
+            glitchToggle.querySelector('span').textContent = 'Glitch mód (on/off)';
+        }
+    });
+
+    function startGlitch() {
+        if (!glitchOn) return;
+
+        const jitterX = (Math.random() - 0.5) * 4;
+        const jitterY = (Math.random() - 0.5) * 4;
+        const jitterScale = 1 + (Math.random() - 0.5) * 0.02;
+
+        orbWrapper.style.transform =
+            `translate3d(${jitterX}px, ${jitterY}px, 0) scale(${jitterScale})`;
+
+        setTimeout(startGlitch, 80 + Math.random() * 120);
+    }
+
+    // Portal gomb – mini fényflash a háttéren
+    portalBtn.addEventListener('click', () => {
+        const flash = document.createElement('div');
+        flash.style.position = 'fixed';
+        flash.style.inset = 0;
+        flash.style.pointerEvents = 'none';
+        flash.style.background = 'radial-gradient(circle at center, rgba(248, 250, 252, 0.9), transparent 60%)';
+        flash.style.mixBlendMode = 'screen';
+        flash.style.opacity = '0.0';
+        flash.style.transition = 'opacity 0.4s ease-out';
+        document.body.appendChild(flash);
+
+        requestAnimationFrame(() => {
+            flash.style.opacity = '0.45';
+            setTimeout(() => {
+                flash.style.opacity = '0';
+                setTimeout(() => flash.remove(), 400);
+            }, 120);
+        });
+    });
 </script>
-
-
-
 </body>
 </html>
