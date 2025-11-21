@@ -2,113 +2,105 @@
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
-    <title>NataStore – Logó</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kovács Koletta Ramóna – Vasgyűjtő Szuperhős</title>
+
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: #FFF7F8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            text-align: center;
+            color: #333;
         }
 
-        .logo-wrapper {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            padding: 20px 28px;
-            border-radius: 18px;
-            background: #ffffff;
-            box-shadow:
-                0 18px 45px rgba(194, 121, 139, 0.18),
-                0 0 0 1px rgba(244, 199, 204, 0.6);
+        .container {
+            max-width: 700px;
+            margin: auto;
+            padding: 20px;
         }
 
-        .logo-main {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        h1 {
+            font-size: 2.2rem;
+            margin-top: 20px;
+            color: #ff4f00;
+            animation: bounce 1.5s infinite;
         }
 
-        .logo-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 999px;
-            background: radial-gradient(circle at 30% 20%, #FFE4EA 0, #F4C7CC 38%, #C2798B 95%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 6px 16px rgba(194, 121, 139, 0.35);
-            position: relative;
-            overflow: hidden;
+        @keyframes bounce {
+            0%   { transform: translateY(0); }
+            50%  { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
         }
 
-        .logo-icon::after {
-            content: "";
-            position: absolute;
-            width: 120%;
-            height: 120%;
-            top: -60%;
-            left: -10%;
-            background: linear-gradient(120deg, rgba(255,255,255,0.7), transparent 50%);
-            transform: rotate(15deg);
+        .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #0066cc;
         }
 
-        .logo-icon span {
-            position: relative;
-            font-family: "Playfair Display", serif;
-            font-weight: 600;
-            font-size: 20px;
-            color: #ffffff;
+        img {
+            width: 90%;
+            max-width: 300px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            margin: 20px 0;
+            animation: fadeIn 2s ease;
         }
 
-        .logo-text-main {
-            font-family: "Playfair Display", serif;
-            font-weight: 600;
-            font-size: 26px;
-            letter-spacing: 0.04em;
-            color: #C2798B;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to   { opacity: 1; transform: scale(1); }
         }
 
-        .logo-text-main span {
-            font-family: "Poppins", sans-serif;
-            font-weight: 400;
-            font-size: 20px;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            margin-left: 8px;
-            color: #4B4B4B;
-            opacity: 0.9;
+        .box {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            animation: float 3s infinite ease-in-out;
         }
 
-        .logo-tagline {
-            font-family: "Poppins", sans-serif;
-            font-weight: 300;
-            font-size: 13px;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: #8B6A73;
+        @keyframes float {
+            0%   { transform: translateY(0); }
+            50%  { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 1rem;
+            opacity: 0.7;
         }
     </style>
 </head>
+
 <body>
-    <div class="logo-wrapper">
-        <div class="logo-main">
-            <div class="logo-icon">
-                <span>N</span>
-            </div>
-            <div class="logo-text-main">
-                NataStore
-                <span>shop</span>
-            </div>
+    <div class="container">
+
+        <h1>✨ Kovács Koletta Ramóna ✨</h1>
+        <div class="subtitle">Berencs – Szabolcs-Szatmár-Bereg megye</div>
+
+        <img src="kep.jpg" alt="Koletta képe">
+
+        <div class="box">
+            <strong>Koletta nem akárki!</strong>  
+            Ő **Berencs vas-hulladék gyűjtő szuperhőse**,  
+            aki minden nap mosolyogva ment meg egy darab vasat a pusztulástól! 💪🧡
         </div>
-        <div class="logo-tagline">
-            Gondosan válogatva, Neked
+
+        <div class="box">
+            Ha valahol vas hever…  
+            **Koletta Ramóna már ott is van!** 🚀  
+            Szupergyors, okos, és mindig jókedvű!
         </div>
+
+        <footer>
+            Készítette: egy titkos segítő, aki nagyon szereti felvidítani őt 😊
+        </footer>
     </div>
 </body>
 </html>
